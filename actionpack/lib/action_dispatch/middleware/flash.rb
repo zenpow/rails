@@ -251,6 +251,10 @@ module ActionDispatch
     end
 
     def call(env)
+      if (session = env['rack.session']) && (flash = session['flash'])
+        flash.sweep
+      end
+
       @app.call(env)
     ensure
       session    = Request::Session.find(env) || {}

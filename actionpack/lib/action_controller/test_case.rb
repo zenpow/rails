@@ -583,6 +583,7 @@ module ActionController
 
         @request.session.update(session) if session
         @request.flash.update(flash || {})
+        @request.session['flash'].sweep
 
         @controller.request  = @request
         @controller.response = @response
