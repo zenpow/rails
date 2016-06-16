@@ -238,6 +238,10 @@ module ActionDispatch
     end
 
     def call(env)
+      if (session = env['rack.session']) && (flash = session['flash'])
+        flash.sweep
+      end
+
       @app.call(env)
     ensure
       session    = Request::Session.find(env) || {}
@@ -254,8 +258,7 @@ module ActionDispatch
         env[KEY] = new_hash
       end
 
-      if (!session.respond_to?(:loaded?) || session.loaded?) && # (reset_session uses {}, which doesn't implement #loaded?)
-         session.key?('flash') && session['flash'].nil?
+      if session.key?('flash') && session['flash'].empty?
         session.delete('flash')
       end
     end
